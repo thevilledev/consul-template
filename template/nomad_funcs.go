@@ -189,3 +189,26 @@ func nomadVariablesFunc(b *Brain, used, missing *dep.Set, defaultNS string, empt
 		return result, nil
 	}
 }
+
+// nomadNodesFunc returns or accumulates a list of node registration
+// stubs from Nomad.
+func nomadNodesFunc(b *Brain, used, missing *dep.Set) func(...string) ([]*dep.NomadNodesSnippet, error) {
+	return func(s ...string) ([]*dep.NomadNodesSnippet, error) {
+		var result []*dep.NomadNodesSnippet
+
+		d, err := dep.NewNomadNodesQuery(strings.Join(s, ""))
+		if err != nil {
+			return nil, err
+		}
+
+		used.Add(d)
+
+		if value, ok := b.Recall(d); ok {
+			return value.([]*dep.NomadNodesSnippet), nil
+		}
+
+		missing.Add(d)
+
+		return result, nil
+	}
+}
