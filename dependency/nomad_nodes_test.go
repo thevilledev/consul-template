@@ -30,10 +30,10 @@ func TestNewNomadNodesQuery(t *testing.T) {
 			true,
 		},
 		{
-			"region",
-			"@global",
+			"datacenter",
+			"@dc1",
 			&NomadNodesQuery{
-				region: "global",
+				datacenter: "dc1",
 			},
 			false,
 		},
@@ -67,9 +67,9 @@ func TestNomadNodesQuery_String(t *testing.T) {
 			"nomad.nodes",
 		},
 		{
-			"region",
-			"@us-east-1",
-			"nomad.nodes(@us-east-1)",
+			"datacenter",
+			"@us-east-1a",
+			"nomad.nodes(@us-east-1a)",
 		},
 	}
 

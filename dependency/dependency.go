@@ -76,6 +76,7 @@ type QueryOptions struct {
 	ConsulPeer        string
 	ConsulPartition   string
 	ConsulNamespace   string
+	Filter            string
 }
 
 func (q *QueryOptions) Merge(o *QueryOptions) *QueryOptions {
@@ -139,6 +140,10 @@ func (q *QueryOptions) Merge(o *QueryOptions) *QueryOptions {
 		r.ConsulPeer = o.ConsulPeer
 	}
 
+	if o.Filter != "" {
+		r.Filter = o.Filter
+	}
+
 	return &r
 }
 
@@ -197,6 +202,7 @@ func (q *QueryOptions) ToNomadOpts() *nomadapi.QueryOptions {
 		Params:     params,
 		WaitIndex:  q.WaitIndex,
 		WaitTime:   q.WaitTime,
+		Filter:     q.Filter,
 	}
 }
 

@@ -357,6 +357,7 @@ func funcMap(i *funcMapInput) template.FuncMap {
 		"nomadVar":         nomadVariableItemsFunc(i.brain, i.used, i.missing, nomadNS),
 		"nomadVarExists":   nomadVariableExistsFunc(i.brain, i.used, i.missing, nomadNS),
 		"nomadNodes":       nomadNodesFunc(i.brain, i.used, i.missing),
+		"nomadNode":        nomadNodeFunc(i.brain, i.used, i.missing),
 
 		// Scratch
 		"scratch": func() *Scratch { return &scratch },

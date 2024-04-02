@@ -2312,7 +2312,7 @@ func TestTemplate_Execute(t *testing.T) {
 					if err != nil {
 						t.Fatal(err)
 					}
-					b.Remember(d, []*dep.NomadNodesSnippet{
+					b.Remember(d, []*dep.NomadNodeSnippet{
 						{Name: "node", Address: "127.0.0.1", Datacenter: "dc1", ID: "abbaacdc-abba-acdc-beef-abbaacdcbeef"},
 					})
 					return b
@@ -2333,9 +2333,9 @@ func TestTemplate_Execute(t *testing.T) {
 					if err != nil {
 						t.Fatal(err)
 					}
-					b.Remember(d, []*dep.NomadNodesSnippet{
-						{Name: "node1", Address: "127.0.0.1", Datacenter: "eu-dc1a", Region: "eu", ID: "abbaacdc-abba-acdc-beef-abbaacdcbeef"},
-						{Name: "node2", Address: "127.0.0.2", Datacenter: "eu-dc2b", Region: "eu", ID: "abbaacdc-abba-acdc-ceef-abbaacdcceef"},
+					b.Remember(d, []*dep.NomadNodeSnippet{
+						{Name: "node1", Address: "127.0.0.1", Datacenter: "eu-dc1a", ID: "abbaacdc-abba-acdc-beef-abbaacdcbeef"},
+						{Name: "node2", Address: "127.0.0.2", Datacenter: "eu-dc2b", ID: "abbaacdc-abba-acdc-ceef-abbaacdcceef"},
 					})
 					return b
 				}(),

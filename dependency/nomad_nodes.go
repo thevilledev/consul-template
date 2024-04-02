@@ -19,27 +19,26 @@ var (
 	_ Dependency = (*NomadNodesQuery)(nil)
 
 	// NomadNodesQueryRe is the regular expression for querying Nomad nodes.
-	NomadNodesQueryRe = regexp.MustCompile(`\A` + regionRe + `\z`)
+	NomadNodesQueryRe = regexp.MustCompile(`\A` + dcRe + `\z`)
 )
 
 func init() {
-	gob.Register([]*NomadNodesSnippet{})
+	gob.Register([]*NomadNodeSnippet{})
 }
 
-// NomadNodesSnippet is a stub node entry in Nomad.
-type NomadNodesSnippet struct {
+// NomadNodeSnippet is a stub node entry in Nomad.
+type NomadNodeSnippet struct {
 	ID         string
 	Name       string
 	Address    string
 	Datacenter string
-	Region     string
 }
 
 // NomadNodesQuery is the representation of a requested Nomad node
 // dependency from inside a template.
 type NomadNodesQuery struct {
-	stopCh chan struct{}
-	region string
+	stopCh     chan struct{}
+	datacenter string
 }
 
 // NewNomadNodesQuery parses a string into a NomadNodesQuery which is
@@ -52,8 +51,8 @@ func NewNomadNodesQuery(s string) (*NomadNodesQuery, error) {
 	m := regexpMatch(NomadNodesQueryRe, s)
 
 	return &NomadNodesQuery{
-		stopCh: make(chan struct{}, 1),
-		region: m["region"],
+		stopCh:     make(chan struct{}, 1),
+		datacenter: m["dc"],
 	}, nil
 }
 
@@ -72,7 +71,7 @@ func (d *NomadNodesQuery) Fetch(clients *ClientSet, opts *QueryOptions) (interfa
 	}
 
 	opts = opts.Merge(&QueryOptions{
-		Region: d.region,
+		Filter: fmt.Sprintf("Datacenter == %s", d.datacenter),
 	})
 
 	log.Printf("[TRACE] %s: GET %s", d, &url.URL{
@@ -87,14 +86,13 @@ func (d *NomadNodesQuery) Fetch(clients *ClientSet, opts *QueryOptions) (interfa
 
 	log.Printf("[TRACE] %s: returned %d results", d, len(nl))
 
-	nodes := make([]*NomadNodesSnippet, len(nl))
+	nodes := make([]*NomadNodeSnippet, len(nl))
 	for i, s := range nl {
-		nodes[i] = &NomadNodesSnippet{
+		nodes[i] = &NomadNodeSnippet{
 			Name:       s.Name,
 			Datacenter: s.Datacenter,
 			ID:         s.ID,
 			Address:    s.Address,
-			Region:     d.region,
 		}
 	}
 
@@ -110,8 +108,8 @@ func (d *NomadNodesQuery) Fetch(clients *ClientSet, opts *QueryOptions) (interfa
 
 // String returns the human-friendly version of this dependency.
 func (d *NomadNodesQuery) String() string {
-	if d.region != "" {
-		return fmt.Sprintf("nomad.nodes(@%s)", d.region)
+	if d.datacenter != "" {
+		return fmt.Sprintf("nomad.nodes(@%s)", d.datacenter)
 	}
 	return "nomad.nodes"
 }
@@ -127,7 +125,7 @@ func (d *NomadNodesQuery) Type() Type {
 }
 
 // NomadNodesByName is a sortable slice of CatalogService structs.
-type NomadNodesByName []*NomadNodesSnippet
+type NomadNodesByName []*NomadNodeSnippet
 
 func (s NomadNodesByName) Len() int           { return len(s) }
 func (s NomadNodesByName) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
