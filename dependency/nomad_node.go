@@ -28,8 +28,8 @@ type NomadNodeQuery struct {
 // NewNomadNodeQuery parses a string into a NomadNodesQuery which is
 // used to list nodes registered within Nomad.
 func NewNomadNodeQuery(s string) (*NomadNodeQuery, error) {
-	if s != "" && !NomadNodeQueryRe.MatchString(s) {
-		return nil, fmt.Errorf("nomad.nodes: invalid format: %q", s)
+	if s == "" || !NomadNodeQueryRe.MatchString(s) {
+		return nil, fmt.Errorf("nomad.node: invalid format: %q", s)
 	}
 
 	m := regexpMatch(NomadNodeQueryRe, s)
@@ -88,10 +88,7 @@ func (d *NomadNodeQuery) Fetch(clients *ClientSet, opts *QueryOptions) (interfac
 
 // String returns the human-friendly version of this dependency.
 func (d *NomadNodeQuery) String() string {
-	if d.id != "" {
-		return fmt.Sprintf("nomad.node(@%s)", d.id)
-	}
-	return "nomad.node"
+	return fmt.Sprintf("nomad.node(%s)", d.id)
 }
 
 // Stop halts the dependency's fetch function.
